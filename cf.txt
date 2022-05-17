@@ -1,0 +1,3 @@
+cloudfront:-
+internet hops:-What are Internet hops?
+HOP counts refer to the number of devices, usually routers, that a piece of data travels through.

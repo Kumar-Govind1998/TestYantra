@@ -1,0 +1,26 @@
+1. create an IAM ROLE and attach role to the instacnce and give AWS-EC2FullAccess
+
+2. install ansible in instance & pip install boto & pip install boto3
+
+3. write a playbook
+
+4. in inventory file(/etc/ansible/hosts) give connectivity permission and python interpretor to access the localhost
+"[webserver]
+localhost ansible_connection=local ansible_python_interpreter=python"
+-----------------------------------------------
+# Basic provisioning example
+- name: Ansible test
+  hosts: localhost
+  tasks:
+  - name: launching AWS instance using Ansible
+    ec2:
+      keypair: EC-2
+      instance_type: t2.micro
+      image: ami-033b95fb8079dc481
+      region: us-east-1
+      wait: yes
+      group: launch-wizard-1
+      group_id: sg-008b232e3b9ea6946
+      count: 1
+      vpc_subnet_id: subnet-0595133e71618447a
+      assign_public_ip: yes

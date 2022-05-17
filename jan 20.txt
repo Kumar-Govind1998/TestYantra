@@ -1,0 +1,3 @@
+vpc:-
+create vpc, subnets and route tables and deploy one front end and backend aplns.
+take load balancer and congigure domain name.

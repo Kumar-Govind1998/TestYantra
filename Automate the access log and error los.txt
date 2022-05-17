@@ -1,0 +1,16 @@
+					Auto generation of access logs and error logs through Cloud watch 
+
+
+
+* Create an IAM Role with cloud watch full access policy attached.
+* Create an ec2 amazon linux instances with the above mentioned IAM role.
+* To push the logs of the ec2 instances to the cloud watch, we need to create an cloud watch agent in the instance.
+* Launch the newly created instance with moba xterm and follow the below commands:-
+	* sudo yum update -y
+	* sudo yum install -y awslogs
+	Edit the /etc/awslogs/awslogs.conf file to configure the logs to track. For more information about editing this file, see CloudWatch Logs agent reference.
+	By default, the /etc/awslogs/awscli.conf points to the us-east-1 Region. To push your logs to a different Region, edit the awscli.conf file and specify that Region.
+	Start the awslogs service.
+	* sudo systemctl start awslogsd
+	* sudo chkconfig awslogs on
+	* sudo systemctl enable awslogsd.service

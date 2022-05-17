@@ -1,0 +1,46 @@
+		Configure SSL and TLS in Amazon Linux2
+
+
+Note:- letsencrypt.org for getting free certificates
+
+1) First make sure httpd is installed and its running to make sure TLS is enabled
+	- sudo yum install -y httpd
+	- sudo systemctl start httpd
+	- sudo systemctl enable httpd
+
+2) openssl must be installed.
+	- sudo yum install -y mod_ssl
+
+3) Change the system host name to a public DNS name as follows:
+	- sudo hostnamectl set-hostname webserver.mydomain.com
+	- sudo reboot (optional)
+	- hostname
+
+4) Extending Amazon Linux 2 with EPEL and Let’s Encrypt:
+	- cd /tmp
+	- wget -O epel.rpm –nv \
+	- https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+	- sudo yum install -y ./epel.rpm
+
+	Install and configure Let’s Encrypt:
+		- sudo yum install python2-certbot-apache.noarch (Give yes to every prompt)
+
+5) Use the following command to install certbot:
+	- sudo certbot -i apache -a manual \
+	   --preferred-challenges dns -d lamp.example.com
+
+	- Enter your email address.
+	- Give yes to every prompt.
+	- Don't Press Enter, before that u have to configure generated key value in your domain Registrar.
+	- Copy the key name and key value generated and create new record in domain registrar and paste them with record type as TXT.
+	- Wait until domain registrar is updated and is in Insync with the domain name.
+	- Now to verify newly added domain name:
+		- Open duplicate tab of the server in mobaxterm/putty.
+
+		- nslookup(Paste the following content).
+			set ty=txt
+			new domain name entered in record
+		- Newly enterd key value must be displayed for the answer.
+
+	- Now, comeback to old tab and press enter and press 1 when prompted.
+	- Now, SSL certificate is issued and https is enabled for the host.

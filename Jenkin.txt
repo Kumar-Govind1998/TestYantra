@@ -1,0 +1,28 @@
+	Jenkins Installation in Redhat-Linux
+
+1) Download jenkins package
+-sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+(Execute both togetherly)
+
+Note:-  sudo amazon-linux-extras install epel (for amazon linux if we get daemonize error)
+
+2) Install Jenkin
+sudo yum install jenkins
+
+3) Start Jenkins
+sudo systemctl start jenkins
+
+4)check status of jenkins if required
+systemctl status jenkins.service
+
+Note: By default port no 8080 will be assigned for jenkins.
+
+	First change the file permission for jenkins else we cannot read the file
+variable path :- /etc/sysconfig/jenkins in CentOS/RHEL or 
+		/etc/default/jenkins in Debian based distributions or
+		/usr/lib/jenkins or /var/log/jenkins or /var/lib/
+
+	- After changing port number change security port number in aws also
+	- Restart jenkins:-
+		sudo service jenkins restart

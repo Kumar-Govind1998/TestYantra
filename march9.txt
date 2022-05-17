@@ -1,0 +1,5 @@
+*Comparing Data Transfer Speeds with S3 Transfer Acceleration
+*Creating and Subscribing to SNS Topics, Adding SNS event for S3 bucket
+*How to Create a static website using Amazon S3
+*Generate S3 presign URL using CloudShell
+

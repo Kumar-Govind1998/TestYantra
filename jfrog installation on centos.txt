@@ -1,0 +1,129 @@
+								JFROG Artifactory
+
+What is an artifact?
+
+	* The files that contain both the compiled code and the resources that are used to compile them are known as artifacts.
+
+	* They are readily deplpoyable files.
+
+	* In java, an artifact would be a .jar , .war or an .ear file.	
+
+What is an artifact repository?
+
+	* An artifact repository is a repository which can store multiple different versions of artificats.
+
+	* eg: Each time the war file is created, it is stored in a server dedicated for the artifacts.
+
+What is JFrog artifactory?
+
+	* JFrog artifactory is a tool used in DevOps methodology to store artifacts(readily deployable code) that has been created
+	in the code pipeline.
+
+	* JFrog can also download dependencies for the build tools and dependencies.
+
+	* JFrog can be integrated with any build tool like jenkins, bamboo etc..
+
+	* Work flow:- Version control >> Jenkins >> Jfrog Artifactory >> Deployment.
+
+	* JFrog can also download the dependencies from remote repository which are asked by the build tool and stores in the local repository.	
+
+Why should we use JFrog for DevOps?
+
+	* System stability and reliability with artifactory high availability (Assurance given by the JFrog).
+
+	* Managing binaries across different environments. (Windows, MAC, linux etc).
+
+	* Security access control and traceability. (Since, JFrog works on caching assets important to the company i.e. Source code of software.
+
+	  It keeps the system secure and keeps track of metadata like which person logged in at which time? and what kind of changes or activity 
+	  did they perform?
+
+	* Full support for docker. JFrog provides support for storing and distributing docker images through its repositories.
+
+	* Quickly replicating remote repos in local area. JFrog is very efficient in replicating and storing remote repositories in a short
+	  amount of time using check-based storage system.
+
+	* It has support for chef. JFrog has comprehensive support for chef. This allows for creation of targeted configuration scripts that
+	  make sure only permitted dependencies are used for particular projects or environments.
+
+Use cases for JFrog artifactory:-
+
+	* Place where you can store all your artifacts.
+
+	* Proxy for remote repos.
+
+	* Dependency manager.
+
+	* Place where we can store docker images.
+
+	* Artifactory integration.
+
+	* Faster release.
+
+	* Business continuity.
+
+	* Orchestration tools.
+
+	* Storage ready.
+
+JFrog installation:-
+ 	1) Have OpenJDK
+	2) At least 2 gb of RAM. (Centos)
+							
+
+installing docker in centos
+
+yum install -y yum-utils \
+device-mapper-persistent-data \
+lvm2
+
+yum-config-manager \
+--add-repo \
+https://download.docker.com/linux/centos/docker-ce.repo
+
+yum install docker-ce docker-ce-cli containerd.io
+
+systemctl start docker
+
+pull the docker image of jfrog:- docker pull docker.bintray.io/jfrog/artifactory-oss
+
+default username = admin and password = password (new password Kumar@12345)
+
+install git and wget in the server
+git clone https://github.com/gkdevops/PetClinic 
+
+install maven:-
+wget https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+
+set the maven path:-
+export PATH=$PATH:/usr/share/apache-maven/bin
+
+Connect maven to jfrog artifactory:-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	

@@ -1,0 +1,26 @@
+tomcat deployment configuration:- login to the machine where u installed tomcat
+
+
+
+
+1) 
+cd /home/kumar/.ssh/apache-tomcat-9.0.58
+cd conf
+vi tomcat-users.xml
+ <role rolename="manager-script"/>
+   <role rolename="manager-gui"/>
+   <user username="admin" password="admin" roles="manager-script, manager-gui"/>
+
+
+
+
+
+2)
+tomcat>>webapps>>manager>>META-INF>>context.xml
+
+Uncomment the following line ( use <!--    and     -->  )         
+
+
+
+ <!--  <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+  allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /> -->

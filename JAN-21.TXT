@@ -1,0 +1,1 @@
+https://aws.plainenglish.io/connecting-to-a-private-instance-using-a-bastion-host-within-a-custom-vpc-7cf7cf35fb97

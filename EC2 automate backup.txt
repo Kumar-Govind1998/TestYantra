@@ -1,0 +1,51 @@
+How to Automate AWS EC2:-
+	We can take the backup of ec2 instances in two ways:-
+1] Lifecycle Manager
+2] Using cloud watch.
+
+
+
+
+1] Lifecycle Manager:-
+
+		With Amazon Data Lifecycle Manager, you can manage the lifecycle of your AWS resources. 
+		You create lifecycle policies, which are used to automate operations on the specified resources.
+
+	The benifits of taking back up of ec2 intances through Lifecycle manager are:-
+
+	*Automated snapshot and AMI creation:-
+	 Automated snapshot and AMI creation.
+	 Create a policy that automates the creation, retention, and deletion of EBS snapshots and EBS-backed AMIs.
+
+	*Fast snapshot restore integration:- 
+	 Automate the creation of snapshots that are enabled for fast snapshot restore. 
+	 Fast snapshot restore enables you to restore volumes that are fully initialized at creation and instantly deliver 
+	 all of their provisioned performance.
+
+ 	*Built-in cross-Region copy:-
+	 Automatically copy snapshots that are created by a lifecycle policy to up to three AWS Regions.
+
+	*Automated cross-account snapshot copy:-
+	 Use cross-account sharing in conjunction with a cross-account copy event policy to automatically share and 
+	 copy snapshots created by a policy across accounts.	
+
+
+	Create a lifecycle policy.
+	Select EBS snapshot policy.
+	Go for volume or instance.
+	Add an IAM role or else a new role will get added.
+	Add the policy tags.
+	Configure the schedule details.
+
+
+
+2] Cloudwatch:-
+
+		Create rules.
+		Give Schedule timing for creation of snapshots.
+		In targets, select ec2createsnapshotAPIcall.		
+		Enter the volume id of the instance which needs to get backup.
+
+
+
+

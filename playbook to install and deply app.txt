@@ -1,0 +1,231 @@
+playbook to install tomcat and deploy application on tomcat
+
+
+
+jenkins workplace ---> site.yml
+
+
+
+---
+- name: Tomcat deployment playbook
+  hosts: webservers       # Inventory hosts group / server to act on
+  become: yes               # If to escalate privilege
+  become_method: sudo       # Set become method
+  remote_user: ansible        # Update username for remote server
+  vars:
+    tomcat_ver: 9.0.52                          # Tomcat version to install
+    ui_manager_user: manager                    # User who can access the UI manager section only
+    ui_manager_pass: manager      # UI manager user password
+    ui_admin_username: admin                    # User who can access bpth manager and admin UI sections
+    ui_admin_pass: admin          # UI admin password
+  roles:
+    - tomcat
+
+
+roles-->tasks-->tomcat-setup-RedHat.yml
+
+- name: Install basic packages
+  package:
+    name: ['vim','bash-completion','tmux','tree','htop','wget','unzip','curl','git']
+    state: present
+
+- name: Install Java 8 CentOS
+  yum:
+    name: java-1.8.0-openjdk
+    state: present
+
+- name: Add tomcat group
+  group:
+    name: tomcat
+
+- name: Add "tomcat" user
+  user:
+    name: tomcat
+    group: tomcat
+    home: /usr/share/tomcat
+    createhome: no
+    system: yes
+
+- name: Download Tomcat
+  get_url:
+    url: "{{ tomcat_archive_url }}"
+    dest: "{{ tomcat_archive_dest }}"
+
+- name: Create a tomcat directory
+  file:
+    path: /usr/share/tomcat
+    state: directory
+    owner: tomcat
+    group: tomcat
+
+- name: Extract tomcat archive
+  unarchive:
+    src: "{{ tomcat_archive_dest }}"
+    dest: /usr/share/tomcat
+    owner: tomcat
+    group: tomcat
+    remote_src: yes
+    extra_opts: "--strip-components=1"
+    creates: /usr/share/tomcat/bin
+
+- name: Copy tomcat service file
+  template:
+    src: templates/tomcat.service.j2
+    dest: /etc/systemd/system/tomcat.service
+  when: ansible_service_mgr == "systemd"
+
+- name: Start and enable tomcat
+  service:
+    daemon_reload: yes
+    name: tomcat
+    state: started
+    enabled: yes
+  when: ansible_service_mgr == "systemd"
+
+- name: Set UI access credentials
+  template:
+    src: tomcat-users.xml.j2
+    dest: /usr/share/tomcat/conf/tomcat-users.xml
+  notify: restart tomcat
+
+- name: Allow access to Manager and Host Manager apps from any IP
+  template:
+    src: context.xml.j2 
+    dest: "{{ item }}"
+  with_items:
+    - /usr/share/tomcat/webapps/host-manager/META-INF/context.xml
+    - /usr/share/tomcat/webapps/manager/META-INF/context.xml
+  notify: restart tomcat
+
+roles--->tasks-->deploy_app.yml
+
+---
+- name: Deploy the new WAR file to target servers
+  copy:
+    src: /var/lib/jenkins/workspace/ansible/webapp/target/webapp.war
+    dest: /usr/share/tomcat/webapps
+
+roles-->defaults-->main.yml
+
+---
+tomcat_archive_url: https://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_ver }}/bin/apache-tomcat-{{ tomcat_ver }}.tar.gz
+tomcat_archive_dest: /tmp/apache-tomcat-{{ tomcat_ver }}.tar.gz
+
+
+roles-->handlers--main.yml
+
+- name: restart tomcat
+  service:
+    name: tomcat
+    state: restarted
+
+roles-->templates---->context.xml.j2
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<Context antiResourceLocking="false" privileged="true" >
+</Context>
+
+
+roles-->templates-->tomcat-users.xml.j2
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<tomcat-users xmlns="http://tomcat.apache.org/xml"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
+              version="1.0">
+<!--
+  NOTE:  By default, no user is included in the "manager-gui" role required
+  to operate the "/manager/html" web application.  If you wish to use this app,
+  you must define such a user - the username and password are arbitrary. It is
+  strongly recommended that you do NOT use one of the users in the commented out
+  section below since they are intended for use with the examples web
+  application.
+-->
+<!--
+  NOTE:  The sample user and role entries below are intended for use with the
+  examples web application. They are wrapped in a comment and thus are ignored
+  when reading this file. If you wish to configure these users for use with the
+  examples web application, do not forget to remove the <!.. ..> that surrounds
+  them. You will also need to set the passwords to something appropriate.
+-->
+<!-- user manager can access only manager section -->
+<role rolename="manager-gui" />
+<user username="{{ ui_manager_user }}" password="{{ ui_manager_pass }}" roles="manager-gui" />
+
+<!-- user admin can access manager and admin section both -->
+<role rolename="admin-gui" />
+<user username="{{ ui_admin_username }}" password="{{ ui_admin_pass }}" roles="manager-gui,admin-gui" />
+</tomcat-users>
+
+
+roles-->templates-->tomcat.service.j2
+
+[Unit]
+Description=Tomcat
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+User=tomcat
+Group=tomcat
+
+Environment=JAVA_HOME={{ JAVA_HOME }}
+Environment='JAVA_OPTS=-Djava.awt.headless=true'
+
+Environment=CATALINA_HOME=/usr/share/tomcat
+Environment=CATALINA_BASE=/usr/share/tomcat
+Environment=CATALINA_PID=/usr/share/tomcat/temp/tomcat.pid
+
+ExecStart=/usr/share/tomcat/bin/catalina.sh start
+ExecStop=/usr/share/tomcat/bin/catalina.sh stop
+
+[Install]
+WantedBy=multi-user.target
+
+roles-->vars-->RedHat.yml
+JAVA_HOME: /usr/lib/jvm/jre
+
+
+
+
+ref links : https://github.com/jmutai/tomcat-ansible
+            https://pawankumar83.wordpress.com
+
+
+
+
+
+
+
+
+
+

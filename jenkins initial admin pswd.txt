@@ -1,0 +1,10 @@
+/var/lib/jenkins/secrets/initialAdminPassword
+
+
+
+
+
+for docker container of jenkins:-
+
+sudo docker exec (container name/id) cat /var/jenkins_home/secrets/initialAdminPassword
+

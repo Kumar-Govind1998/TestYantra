@@ -1,0 +1,33 @@
+1) Containerizing nodejs application:-
+	Launch an ec2-nstance (inside git, nodejs, docker)
+	Installing nodejs:-
+	curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+	sudo yum install nodejs -y
+	git clone https://github.com/Juriy/easyio.git
+	npm install (where package.json file exists)
+	
+
+	write adocker file by the name Dockerfile(inside the project directory which we cloned from git)
+	write the following steps inside the docker file
+	
+	FROM node:12.8.0-alpine
+	WORKDIR /server
+	COPY package.json .
+	RUN npm install
+	COPY . .
+	EXPOSE 8080
+	CMD ["npm", "start", "main.js"]
+
+	run the docker file:- " docker build -t kumargovind/frontend . " 
+	the above command creates an image, run the following command to create the container from that image.
+	" docker run -it -p 8080:8080 -d kumargovind/frontend "
+	
+	After this, edit security inbound rules and get the public ip and search followed by :8080
+
+
+
+1) Containerizing nodejs application:-
+	Launch an ec2-nstance Ubuntu
+
+
+

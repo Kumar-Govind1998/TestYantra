@@ -1,0 +1,151 @@
+prometheus
+grafana:-
+
+we will monitor our aws instance using prometheus and grafana
+
+we use grafana for visualization and creating some dashboard.
+
+
+Agenda:-
+
+1] What is prometheus?
+2] Intsall Prometheus amd configure Prometheus to monitor itself.
+3] Insatll Node Exporter on other ec2 instances.
+4] Configure Prometheus for the ec2 instances.
+5] ec2 Service Discovery for Prometheus 
+6] Install Grafana.
+
+Prerequisite:-
+
+1] Prometheus  ec2 instance (t2.micro)						Take 2 ubuntu instances
+2] Node ec2 instance to monitor							1 for installing Prometheus and grafana
+3] Security group configured properly.						other one is for target where we install node exporter	
+4] Clone ( https://github.com/devops4solutions/prometheus-monitoring ) git repository.
+
+Security groups configured on ec2 instances:-
+
+port 9090 - Prometheus server
+port 9100 - Prometheus Node Exporter
+port 3000 - Grafana
+
+What is Prometheus?
+
+* It is an open source tool which is used for monitoring and alerting application.
+* Uses PromoQL ( Prometheus Query Language ).
+* Prometheus Server:- This is the central component that collects the metrics from multiple nodes.
+  Prometheus uses the concept of scraping, where target systens ("metric endpoints") are contacted to fetch data at regular intervals.(Should be written
+  inside the yaml file).
+* Node Exporter:- This is the monitoring agent which we installed on all the target machines so that Prometheus can fetch the data from all metric endpoints.
+  Prometheus pulls the data with the help of node exporter.
+* Web UI :- The web UI layer of Prometheus provides the end user with an interface to visualize data collected by Prometheus.
+  In this, we will use Grafana to visualize the data.
+
+Installing Prometheus :-
+
+	Now we install the Prometheus in one of the ec2 instance.
+
+	1] clone https://github.com/devops4solutions/prometheus-monitoring repository.
+
+	2] Run the install-install-prometheus.sh.sh script.
+
+	The script will do the below steps:-
+
+	* Creates a user and adds new directories:-
+	sudo useradd --no-create-home prometheus.
+	sudo mkdir /etc/prometheus
+	sudo mkdir /var/lib/prometheus
+
+	* Downloads the Prometheus, extract it and put it in /usr/local/bin folder and finally delete the software.
+	wget  https://github.com/prometheus/prometheus/releases/download/v2.23.0/prometheus-2.23.0.linux-amd64.tar.gz
+	tar -xvf prometheus-2.23.0.linux-amd64.tar.gz
+	sudo cp prometheus-2.23.0.linux-amd64/prometheus /usr/local/bin
+	sudo cp prometheus-2.23.0.linux-amd64/promtool /usr/local/bin
+	sudo cp -r prometheus-2.23.0.linux-amd64/consoles /etc/prometheus/
+	sudo cp -r prometheus-2.23.0.linux-amd64/console_libraries /etc/prometheus
+	sudo cp prometheus-2.23.0.linux-amd64/promtool /usr/local/bin/
+	rm -rf prometheus-2.23.0.linux-amd64.tar.gz prometheus-2.19.0.linux-amd64
+
+	3] Now we will configure Prometheus to monitor itself using yaml file.
+
+	Create a prometheus.yml file at /etc/prometheus/prometheus.yml:-
+	
+	global:
+	  scrape_interval: 15s
+	  external_labels:
+	    monitor: 'prometheus'
+
+	scrape_configs:
+  	  - job_name: 'prometheus'
+	    static_configs:
+	      - targets: ['localhost:9090']
+	
+	4] Now we want to run the Prometheus as a Service so that in case of server restart service will come automatically.
+
+	Lets create a fail/etc/systemd/system/prometheus.service with the below content:
+
+	5] Change the ownership of all folders and files which we have created to the user.
+
+	6] Now we will configure the start and start it.
+
+	7] Now open it on the browser.
+
+Install Node Exporter:-
+
+	To monitor your servers you need to install the node exporter on all your target machine which is like a monitoring agent on all the servers.
+
+Configure Prometheus for the nodes:-
+
+ 	Now we will configure the Prometheus for our ec2 instance where we have installed the node-exporter.
+
+	Login to the Prometheus server and edit the file /etc//prometheus/prometheus.yml
+
+Install Grafana:-
+
+	Once Prometheus is installed successfully then we can install the Grafana and configure Prometheus as a datasource.
+
+	Grafana is an open source tool which is used to provide the visualization of your metrics.
+
+	Steps to install grafana:-
+
+	clone the https://github.com/devops4solutions/prometheus-monitoring repository
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
